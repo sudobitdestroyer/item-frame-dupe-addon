@@ -10,7 +10,6 @@ import meteordevelopment.meteorclient.settings.SettingGroup;
 import meteordevelopment.meteorclient.systems.modules.Module;
 import meteordevelopment.meteorclient.utils.player.FindItemResult;
 import meteordevelopment.meteorclient.utils.player.InvUtils;
-import meteordevelopment.meteorclient.utils.player.Rotations;
 import meteordevelopment.orbit.EventHandler;
 import net.minecraft.entity.decoration.ItemFrameEntity;
 import net.minecraft.item.ItemStack;
@@ -30,13 +29,6 @@ public class ItemFrameDupe extends Module {
         .defaultValue(4.5)
         .min(1)
         .sliderRange(1, 6)
-        .build()
-    );
-
-    private final Setting<Boolean> rotate = sgGeneral.add(new BoolSetting.Builder()
-        .name("rotate")
-        .description("Rotates to the item frame before clicking.")
-        .defaultValue(true)
         .build()
     );
 
@@ -228,20 +220,15 @@ public class ItemFrameDupe extends Module {
     }
 
     private void clickFrame(ItemFrameEntity frame, boolean rightClick) {
-        Runnable action = () -> {
-            if (rightClick) {
-                EntityHitResult hitResult = new EntityHitResult(frame);
-                mc.interactionManager.interactEntityAtLocation(mc.player, frame, hitResult, Hand.MAIN_HAND);
-                mc.interactionManager.interactEntity(mc.player, frame, Hand.MAIN_HAND);
-            } else {
-                mc.interactionManager.attackEntity(mc.player, frame);
-            }
-            mc.player.swingHand(Hand.MAIN_HAND);
-            totalClicks++;
-        };
-
-        if (rotate.get()) Rotations.rotate(Rotations.getYaw(frame), Rotations.getPitch(frame), 100, true, action);
-        else action.run();
+        if (rightClick) {
+            EntityHitResult hitResult = new EntityHitResult(frame);
+            mc.interactionManager.interactEntityAtLocation(mc.player, frame, hitResult, Hand.MAIN_HAND);
+            mc.interactionManager.interactEntity(mc.player, frame, Hand.MAIN_HAND);
+        } else {
+            mc.interactionManager.attackEntity(mc.player, frame);
+        }
+        mc.player.swingHand(Hand.MAIN_HAND);
+        totalClicks++;
     }
 
     private boolean isMatchingTemplate(ItemStack stack) {
